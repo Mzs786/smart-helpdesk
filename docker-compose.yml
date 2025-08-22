@@ -1,0 +1,69 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo:7.0
+    container_name: helpdesk-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password123
+      MONGO_INITDB_DATABASE: helpdesk
+    volumes:
+      - mongo_data:/data/db
+      - ./backend/scripts/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+    networks:
+      - helpdesk-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: helpdesk-backend
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      NODE_ENV: development
+      PORT: 8080
+      MONGO_URI: mongodb://admin:password123@mongo:27017/helpdesk?authSource=admin
+      JWT_SECRET: your-super-secret-jwt-key-change-in-production
+      AUTO_CLOSE_ENABLED: "true"
+      CONFIDENCE_THRESHOLD: "0.78"
+      STUB_MODE: "true"
+      OPENAI_API_KEY: ""
+    depends_on:
+      - mongo
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    networks:
+      - helpdesk-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: helpdesk-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      VITE_API_URL: http://localhost:8080
+      VITE_APP_NAME: Smart Helpdesk
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - helpdesk-network
+
+volumes:
+  mongo_data:
+
+networks:
+  helpdesk-network:
+    driver: bridge

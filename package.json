@@ -1,0 +1,34 @@
+{
+  "name": "smart-helpdesk-agentic",
+  "version": "1.0.0",
+  "description": "Smart Helpdesk with Agentic Triage - A comprehensive support ticket system with AI-powered triage",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "build": "cd frontend && npm run build",
+    "start": "cd backend && npm start",
+    "test": "concurrently \"npm run test:backend\" \"npm run test:frontend\"",
+    "test:backend": "cd backend && npm test",
+    "test:frontend": "cd frontend && npm test",
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:build": "docker-compose build",
+    "seed": "cd backend && npm run seed"
+  },
+  "keywords": [
+    "helpdesk",
+    "ai",
+    "triage",
+    "mern",
+    "support",
+    "tickets"
+  ],
+  "author": "Smart Helpdesk Team",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
